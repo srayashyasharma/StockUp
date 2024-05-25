@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stockup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const notificationDot = document.getElementById('notification-dot');
+            const items = JSON.parse(localStorage.getItem('items')) || [];
+            const alertNumber = parseInt(localStorage.getItem('alertNumber')) || 1;
+            const alertUnit = localStorage.getItem('alertUnit') || 'days';
+        
+            const calculateDaysDifference = (expirationDate) => {
+                const currentDate = new Date();
+                const expDate = new Date(expirationDate);
+                const timeDiff = expDate - currentDate;
+                return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            };
+        
+            let days;
+            switch (alertUnit) {
+                case 'days':
+                    days = alertNumber;
+                    break;
+                case 'weeks':
+                    days = alertNumber * 7;
+                    break;
+                case 'months':
+                    days = alertNumber * 30;
+                    break;
+            }
+        
+            let hasExpiringItems = items.some(item => {
+                const daysDiff = calculateDaysDifference(item.expiration);
+                return daysDiff <= days;
+            });
+        
+            if (hasExpiringItems) {
+                notificationDot.style.display = 'inline-block';
+            } else {
+                notificationDot.style.display = 'none';
+            }
+        });
+        </script>
+    
+          
+      
+    <style>
+#notification-dot {
+              position: absolute;
+              top: 30px;
+              right: 246x;
+              height: 10px;
+              width: 10px;
+              background-color: red;
+              border-radius: 50%;
+              display: none;
+          }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        nav {
+            background-color: #2848e7;
+            color: white;
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            border-radius: 0 0 15px 15px;
+        }
+        nav img {
+            border-radius: 15px;
+            height: 40px;
+        }
+        nav h1 {
+            font-size: 24px;
+            margin: 0 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 25px;
+            transition: text-decoration 0.3s; /* Smooth transition for hover effect */
+            
+        }
+        nav a:hover {
+              text-decoration: underline; /* Add underline on hover */
+              
+        }
+        nav .button-like {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+  
+
+
+
+        main {
+            padding: 0 20px;
+        }
+        .full-image {
+            width: 100%;
+            height: 95vh;
+            background-image: url('images/index.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            text-align: center;
+        }
+        .full-image h1 {
+            font-size: 48px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        .full-image p {
+            font-size: 24px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 120px;
+        }
+        .section {
+            padding: 60px 0;
+            text-align: center;
+        }
+        .real-time-section,
+.expiration-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.real-time-section img {
+    order: 1; /* Image on the left for Real-time Tracking */
+    max-width: 50%; /* Adjust the size as needed */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10%; /* Makes the image rounded */
+}
+
+         .real-time-section div {
+           order: 2; /* Text on the right for Real-time Tracking */
+          max-width: 95%; /* Adjust the size as needed */
+    }
+
+       .expiration-section img {
+        order: 2; /* Image on the right for Expiration Alerts */
+        max-width: 50%; /* Adjust the size as needed */
+        height: auto; /* Maintain aspect ratio */
+        border-radius: 10%; /* Makes the image rounded */
+    }
+
+        .expiration-section div {
+              order: 1; /* Text on the left for Expiration Alerts */
+              max-width: 45%; /* Adjust the size as needed */
+          }
+
+
+        .section-content img.about-image
+        {
+            float: left;
+            margin-right: 20px;
+            border-radius: 15px;
+            width: 550px;
+            height: auto;
+        }
+
+         .section-content .about-text {
+             overflow: hidden;
+        }
+        p{
+            font-size: 25px;
+        }
+        .faq .question {
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+            margin: 10px auto;
+            max-width: 900px;
+            text-align: center;
+        }
+        .faq h3 {
+            font-size: 50px;
+            color: rgb(8, 7, 7);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .contact input, .contact textarea {
+            width: 80%;
+            max-width: 500px;
+            margin: 5px 0;
+            padding: 10px;
+        }
+        .contact button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            width: 80%;
+            max-width: 500px;
+        }
+        .footer {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        p {
+            text-align: left;
+            line-height: 1.6;
+        }
+        .button-like {
+    display: inline-block;
+    position: relative;
+    padding: 10px 20px; /* Adjust the padding as needed */
+    font-size: 16px; /* Adjust the font size as needed */
+    color: #007bff; /* Text color */
+    background-color: white; /* Initial background color */
+    text-align: center;
+    text-decoration: none;
+    border: 2px solid #007bff; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    overflow: hidden; /* Hide overflow for pseudo-element */
+    z-index: 1; /* Ensure content is above pseudo-element */
+}
+
+.button-like::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #007bff; /* Fill color */
+    z-index: -1; /* Place behind the text */
+    transition: transform 0.3s ease; /* Smooth transition for hover effect */
+    transform: scaleX(0); /* Initial state: hidden */
+    transform-origin: left; /* Animation starts from the left */
+}
+
+.button-like:hover::before {
+    transform: scaleX(1); /* Hover state: fill the button */
+}
+
+.button-like:hover {
+    color: white; /* Text color on hover */
+}
+
+
+        
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            nav h1, nav a {
+                margin: 5px 0;
+            }
+            .section-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .section-content img {
+                margin: 20px 0;
+            }
+            .contact input, .contact textarea, .contact button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div>
+            <img src="images/logo.jpg" alt="Stockup Logo">
+            <h1>Stockup</h1>
+        </div>
+        <div>
+            <a href="stock/item-list.html" style="font-size: 25px;"  >Check Stock</a>
+            <a href="stock/manage.html" style="font-size: 25px;" >Manage Stock</a>
+            
+            <a href="stock/alerts.html"  style="font-size: 25px;" >Alerts<span id="notification-dot"></span> </a>
+            <a href="signup.html" class="button-like" style="font-size: 20px;" >Get Started</a>
+        </div>
+    </nav>
+    <main>
+        <div class="full-image">
+            <div>
+                <h1>STOCKUP NOW</h1>
+                <p>Revolutionize your inventory management - track, analyze, and stay ahead of stock needs.</p>
+            </div>
+        </div>
+        <div class="section about section-content" style="background-color: #d1ecf2; overflow: hidden;">
+            <img src="images/about.jpg" alt="Stockup Image" class="about-image">
+            <div class="about-text">
+                <h1 style="font-size: 70px; text-align: left;"><strong>About StockUp</strong></h1>
+                <p >Welcome to Stockup-the ultimate solution for tracking and managing your inventory in real-time.</p>
+                <p>Say goodbye to stock shortages and expired products with our intuitive platform that provides detailed insights into your stock levels.</p>
+                <p>Stockup offers a seamless experience for monitoring perishable and non-perishable items, ensuring you never run out of essential supplies.</p>
+            </div>
+        </div>
+        
+            
+        <div class="section faq" style="background-color: rgb(244, 242, 239);">
+            <h3 >Frequently Asked Questions</h3>
+            <div class="question" style="background-color: #d1ecf2;">
+                <h2>How does Stockup work?</h2>
+                <p style="text-align: center;">StockUp allows you to input stock items, track usage through orders, and <br>receive alerts for expiring products.</p>
+            </div>
+            <div class="question" style="background-color: #d1ecf2;">
+                <h2>What alerts does StockUp provide?</h2>
+                <p style="text-align: center;">Stockup alerts you about items expiring in days, ensuring<br> you can take timely action to prevent wastage.</p>
+            </div>
+            <div class="question" style="background-color: #d1ecf2;">
+                <h2>Is manual adjustment possible?</h2>
+                <p style="text-align: center;">You can manually adjust stock quantities <br>and set expiry dates for accurate tracking and management.</p>
+            </div>
+            <div class="question" style="background-color: #d1ecf2;">
+                <h2>How does StockUp help with waste reduction?</h2>
+                <p style="text-align: center;">StockUp's detailed analysis helps you identify<br> overstocked items and reduce waste effectively.</p>
+            </div>
+        </div>
+        <div class="section real-time section-content real-time-section" style="background-color: #d1ecf2;">
+            <img src="images/real.jpg" alt="Real-time Tracking">
+            <div >
+                <h2 style="text-align: left; font-size: 50px;">Real-time Tracking</h2>
+                <p>Track stock level instantly as items are used or<br>restocked,ensurning accurate inventory <br>managment </p>
+            </div>
+        </div>
+        <div class="section expiration section-content expiration-section">
+            <img src="images/alert.jpg" alt="Expiration Alerts">
+            <div>
+                <h2 style="text-align: left; font-size: 50px;">Expiration Alerts!</h2>
+                <p style="text-align: left;">Receive timely alerts for items nearing expiry,<br>preventing wastage and ensuring freshness </p>
+                <a href="#getstarted" class="button-like">Get Started</a>
+            </div>
+        </div>
+        
+        <div class="section optimize" style="background-color: #d1ecf2;">
+            <h2 style="font-size: 60px;">Optimize Your Stock <br>Management Today</h2>
+            <p style="text-align: center;">Experience he future of the stock tracking and analysis join now .! </p>
+            <a href="signup.html" class="button-like">Sign Up Now</a>
+        </div>
+        <div class="section follow">
+            <h2>Follow Us for Updates</h2>
+            <a href="https://facebook.com" style="font-size: 34px; margin-right: 10px; "><i class="fab fa-facebook-square"></i></a>
+            <a href="https://twitter.com" style="font-size: 34px; margin-right: 10px; " ><i class="fab fa-twitter-square"></i></a>
+            <a href="https://instagram.com" style="font-size: 34px; margin-right: 10px; "><i class="fab fa-instagram-square"></i></a>
+            <a href="https://linkedin.com" style="font-size: 34px; margin-right: 10px; "><i class="fab fa-linkedin"></i></a>
+        </div>
+        
+        <div class="section contact" style="background-color: #d1ecf2;">
+            <h2>Get in Touch</h2>
+            <form id="contact-form" onsubmit="sendEmail(); reset(); return false;">
+                <input type="text" id="name" name="name" placeholder="Name" required><br>
+                <input type="email" id="email" name="email" placeholder="Email" required><br>
+                <textarea id="message" name="message" placeholder="Message" required></textarea><br>
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+        <script src="https://smtpjs.com/v3/smtp.js" ></script>
+        <script>
+            function sendEmail(){
+                Email.send({
+                    Host : "smtp.gmail.com",
+                    Username : "srayashyasharma9@gmail.com",
+                    Password : "Anna@ias9",
+                    To : 'srayashyasharma9@gmail.com',
+                    From : document.getElementById("email").value,
+                    Subject :"New contact form enquirey ",
+                    Body : "Name"+document.getElementById("name").value +
+                    "<br> Email"+ document.getElementById("email").value+
+                    "<br> Meassage :"+document.getElementById("message").value
+                }).then(
+                    message => alert("meassage sent succesfully")
+                    );
+                }
+        </script>
+        <div class="footer">
+            <p style="text-align: center;">&copy; 2024 Stockup. All rights reserved.</p>
+        </div>
+    </main>
+    
+</body>
+</html>

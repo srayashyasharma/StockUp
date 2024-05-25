@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style >
+        body {
+    background-color: #afddef; /* Set the background color */
+    text-align: center; /* Center align the text */
+   
+    background-size: cover; /* Cover the entire background */
+    background-repeat: no-repeat; /* Do not repeat the background image */
+    background-attachment: fixed; /* Fix the background image position */
+}
+
+        h1 {
+            color: #007bff; /* Set the text color to blue */
+            text-shadow: 2px 2px 4px #000000; /* Add a black shadow */
+        }
+
+        body {
+           
+            padding-top: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+            border: 1px solid #007bff;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #007bff;
+        }
+
+        .card-text {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 style="color: rgb(19, 19, 20); text-shadow: 2px 2px 4px rgb(243, 242, 242); font-weight: bold;">ITEM LIST</h2>
+    <div class="row" id="item-list"></div>
+    <a href="manage.html" class="btn btn-link mt-4">Back to Main Page</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const itemList = document.getElementById('item-list');
+        let items = JSON.parse(localStorage.getItem('items')) || [];
+
+        const renderItems = () => {
+            itemList.innerHTML = '';
+            items.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'col-md-4';
+                card.innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${item.name}</h5>
+                            <p class="card-text">
+                                <strong>Weight:</strong> ${item.weight} grams (${convertToOriginalUnit(item.weight, item.unit)})<br>
+                                <strong>Type:</strong> ${item.type}<br>
+                                <strong>Expiration:</strong> ${item.expiration || 'No expiration date'}
+                            </p>
+                            <span class="delete-item" data-index="${index}" style="cursor: pointer; color: blue;"><i class="fa fa-trash"></i></span>
+                        </div>
+                    </div>
+                `;
+                itemList.appendChild(card);
+            });
+
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const index = parseInt(item.getAttribute('data-index'));
+                    if (confirm('Are you sure you want to delete this item?')) {
+                        items.splice(index, 1);
+                        localStorage.setItem('items', JSON.stringify(items));
+                        renderItems();
+                    }
+                });
+            });
+        };
+
+        const convertToOriginalUnit = (weight, unit) => {
+            switch (unit) {
+                case 'grams':
+                    return `${weight} grams`;
+                case 'kilograms':
+                    return `${(weight / 1000).toFixed(2)} kilograms`;
+                case 'liters':
+                    return `${(weight / 1000).toFixed(2)} liters`;
+                default:
+                    return `${weight} grams`;
+            }
+        };
+
+        renderItems();
+    });
+</script>
+</body>
+</html>
+
+

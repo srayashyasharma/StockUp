@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Management System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #afddef;
+            padding-top: 50px;
+   
+    background-size: cover; /* Cover the entire background */
+    background-repeat: no-repeat; /* Do not repeat the background image */
+    background-attachment: fixed; /* Fix the background image position */
+            
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .list-group-item .badge {
+            font-size: 1.2rem;
+        }
+        .cr {
+            color: green;
+        }
+        .dr {
+            color: red;
+        }
+        h1, h2 {
+            color: #343a40;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+        h2 {
+            color: #007bff;
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .transaction-CR { color: green; }
+        .transaction-DR { color: red; }
+        .transaction-ED { color: blue; }
+        .list-group-item {
+            border: none;
+            padding: 10px 15px;
+        }
+        .btn {
+            margin-right: 10px;
+        }
+        .btn-warning {
+            margin-top: 10px;
+        }
+        .btn-primary,
+        .btn-success,
+        .btn-danger,
+        .btn-info,
+        .btn-link {
+            color: #fff;
+        }
+        .btn-primary:hover,
+        .btn-success:hover,
+        .btn-danger:hover,
+        .btn-info:hover,
+        .btn-link:hover {
+            color: #fff;
+        }
+        .btn-primary {
+            background-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .thin-line {
+    border-top: 1px solid rgba(0, 0, 0, 0.3); /* 1px solid black with 30% opacity */
+}
+
+    </style>
+</head>
+<body >
+<div class="container">
+    <h2 style="font-variant: small-caps; font-weight: bold; font-size: 44px; line-height: 1; font-family: sans-serif;"><span style="color: black;">I</span>tem <span style="color: black;">M</span>anagement <span style="color: black;">S</span>ystem</h2>
+
+    
+    <!-- Item Form -->
+    <form id="item-form">
+        <div class="form-group">
+            <label for="item-name">Item Name:</label>
+            <input type="text" class="form-control" id="item-name" required>
+        </div>
+        <div class="form-group">
+            <label for="item-weight">Weight:</label>
+            <input type="number" class="form-control" id="item-weight" min="0.01" step="0.01" required>
+            <select class="form-control mt-2" id="weight-unit">
+                <option value="grams">grams</option>
+                <option value="kilograms">kilograms</option>
+                <option value="liters">liters</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="item-type">Item Type:</label>
+            <select class="form-control" id="item-type">
+                <option value="perishable">Perishable</option>
+                <option value="non-perishable">Non-Perishable</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="item-expiration">Expiration Date (if applicable):</label>
+            <input type="date" class="form-control" id="item-expiration">
+            <small class="form-text text-muted">Leave blank if no expiration date</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Item</button>
+    </form>
+    <div style="margin-bottom: 20px;"></div>
+    <div class="thin-line"></div>
+    <div style="margin-bottom: 30px;"></div>
+    <!-- Weight Update Form -->
+    <div>
+        <h4 style="font-variant: small-caps; font-weight: bold; font-size: 34px; line-height: 1; font-family: sans-serif;">Update Weight</h4>
+        <div style="margin-bottom: 20px;"></div>
+        <form id="update-weight-form">
+            <div class="form-group">
+                <label for="update-item-select">Select Item:</label>
+                <select class="form-control" id="update-item-select"></select>
+            </div>
+            <div class="form-group">
+                <label for="update-weight">Weight:</label>
+                <input type="number" class="form-control" id="update-weight" min="0.01" step="0.01" required>
+                <select class="form-control mt-2" id="update-weight-unit">
+                    <option value="grams">grams</option>
+                    <option value="kilograms">kilograms</option>
+                    <option value="liters">liters</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-success" id="add-weight">Add</button>
+            <button type="button" class="btn btn-danger" id="remove-weight">Remove</button>
+            <button type="button" class="btn btn-info" id="edit-weight">Edit</button>
+        </form>
+    </div>
+    <div style="margin-bottom: 20px;"></div>
+    <div class="thin-line"></div>
+    <div style="margin-bottom: 20px;"></div>
+    
+    <!-- Link to Item List Page -->
+    <div>
+        <a href="item-list.html" class="btn btn-primary">View Item List</a>
+        <a href="alerts.html" class="btn btn-primary">View Alerts</a>
+    </div>
+    <!-- for vertical spacing -->
+    <div style="margin-bottom: 20px;"></div>
+    <div class="thin-line"></div>
+    <!-- Weight Statement -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div style="margin-bottom: 20px;"></div>
+            <h4 style="font-variant: small-caps; font-weight: bold; font-size: 34px; line-height: 1; font-family: sans-serif;">Weight Statement</h4>
+
+            <ul id="weight-statement" class="list-group"></ul>
+        </div>
+        <div class="col-sm-12 mt-3">
+            <button type="button" class="btn btn-warning" id="clear-transactions">Clear Transactions</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const itemForm = document.getElementById('item-form');
+        const updateWeightForm = document.getElementById('update-weight-form');
+        const updateItemSelect = document.getElementById('update-item-select');
+        const weightStatement = document.getElementById('weight-statement');
+        const clearTransactionsButton = document.getElementById('clear-transactions');
+
+        let items = JSON.parse(localStorage.getItem('items')) || [];
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+        const saveItemsToLocalStorage = () => {
+            localStorage.setItem('items', JSON.stringify(items));
+        };
+
+        const saveTransactionsToLocalStorage = () => {
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        };
+
+        const renderUpdateItemSelect = () => {
+            updateItemSelect.innerHTML = '';
+            items.forEach((item, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.text = item.name;
+                updateItemSelect.appendChild(option);
+            });
+        };
+        const renderTransactions = () => {
+    weightStatement.innerHTML = '';
+    transactions.forEach(transaction => {
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item d-flex justify-content-between align-items-center border';
+
+        // Create <span> elements for each value
+        const itemNameSpan = document.createElement('span');
+        itemNameSpan.textContent = transaction.name;
+
+        const itemWeightSpan = document.createElement('span');
+        itemWeightSpan.textContent = `${transaction.weight} ${transaction.unit}`;
+
+        // Calculate remaining weight in kilograms
+        let remainingWeightKg;
+        if (transaction.type === 'DR') {
+            remainingWeightKg = (transaction.remainingWeight - transaction.weight) / 1000; // Convert to kg
+        } else if (transaction.type === 'CR') {
+            remainingWeightKg = (transaction.remainingWeight + transaction.weight) / 1000; // Convert to kg
+        }
+        const remainingWeightSpan = document.createElement('span');
+        remainingWeightSpan.textContent = `${transaction.type}( Remaining: ${remainingWeightKg.toFixed(2)} kg)`; // Display with 2 decimal places
+
+        // Apply color based on transaction type
+        if (transaction.type === 'DR') {
+            remainingWeightSpan.style.color = 'red';
+        } else if (transaction.type === 'CR') {
+            remainingWeightSpan.style.color = 'green';
+        } else if (transaction.type === 'ED') {
+            remainingWeightSpan.style.color = 'blue';
+            remainingWeightSpan.textContent = `(ED Remaining: ${remainingWeightKg.toFixed(2)} kg)`; // Display with 2 decimal places
+        }
+
+        // Append <span> elements to the list item
+        listItem.appendChild(itemNameSpan);
+        listItem.appendChild(itemWeightSpan);
+        listItem.appendChild(remainingWeightSpan);
+
+        weightStatement.appendChild(listItem);
+    });
+
+    // Align text to center for all list items
+    weightStatement.style.textAlign = 'center';
+};
+
+
+
+
+
+        const addItem = (name, weight, unit, type, expiration) => {
+            items.push({ name, weight: convertToGrams(weight, unit), unit, type, expiration });
+            saveItemsToLocalStorage();
+            renderUpdateItemSelect();
+        };
+
+        const updateItemWeight = (index, weight, unit, type) => {
+            const item = items[index];
+            const weightInGrams = convertToGrams(weight, unit);
+            let remainingWeight;
+
+            switch(type) {
+                case 'CR':
+                    item.weight += weightInGrams;
+                    break;
+                case 'DR':
+                    item.weight -= weightInGrams;
+                    if (item.weight < 0) item.weight = 0;
+                    break;
+                case 'ED':
+                    item.weight = weightInGrams;
+                    break;
+            }
+
+            remainingWeight = item.weight;
+            item.unit = 'grams';
+            transactions.push({ type, weight, unit, name: item.name, remainingWeight });
+            saveItemsToLocalStorage();
+            saveTransactionsToLocalStorage();
+            renderUpdateItemSelect();
+            renderTransactions();
+        };
+
+        const convertToGrams = (weight, unit) => {
+            switch (unit) {
+                case 'grams':
+                    return weight;
+                case 'kilograms':
+                    return weight * 1000;
+                case 'liters':
+                    return weight * 1000;
+                default:
+                    return weight;
+            }
+        };
+
+        const clearTransactions = () => {
+            if (confirm('Are you sure you want to clear all transactions?')) {
+                const password = prompt('Enter password to clear transactions:');
+                if (password === '1234') {
+                    transactions = [];
+                    saveTransactionsToLocalStorage();
+                    renderTransactions();
+                } else {
+                    alert('Incorrect password.');
+                }
+            }
+        };
+
+        itemForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('item-name').value;
+            const weight = parseFloat(document.getElementById('item-weight').value);
+            const unit = document.getElementById('weight-unit').value;
+            const type = document.getElementById('item-type').value;
+            const expiration = document.getElementById('item-expiration').value;
+            addItem(name, weight, unit, type, expiration);
+            itemForm.reset();
+        });
+
+        updateWeightForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+        });
+
+        document.getElementById('add-weight').addEventListener('click', () => {
+            const index = updateItemSelect.value;
+            const weight = parseFloat(document.getElementById('update-weight').value);
+            const unit = document.getElementById('update-weight-unit').value;
+            updateItemWeight(index, weight, unit, 'CR');
+        });
+
+        document.getElementById('remove-weight').addEventListener('click', () => {
+            const index = updateItemSelect.value;
+            const weight = parseFloat(document.getElementById('update-weight').value);
+            const unit = document.getElementById('update-weight-unit').value;
+            updateItemWeight(index, weight, unit, 'DR');
+        });
+
+        document.getElementById('edit-weight').addEventListener('click', () => {
+            const index = updateItemSelect.value;
+            const weight = parseFloat(document.getElementById('update-weight').value);
+            const unit = document.getElementById('update-weight-unit').value;
+            updateItemWeight(index, weight, unit, 'ED');
+        });
+
+        clearTransactionsButton.addEventListener('click', clearTransactions);
+
+        renderUpdateItemSelect();
+        renderTransactions();
+    });
+</script>
+</body>
+</html>
+

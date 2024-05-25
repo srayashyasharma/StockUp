@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Alerts</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #afddef;
+            padding-top: 50px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #343a40;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+        .thin-line {
+            border-top: 1px solid rgba(0, 0, 0, 0.3);
+        }
+        .card.expiring-item {
+            border: 2px solid red;
+            color: red;
+        }
+        .card.expiring-item .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 style="font-variant: small-caps; font-weight: bold; font-size: 44px; line-height: 1; text-align: center; font-family: sans-serif;"><span style="color: rgb(239, 11, 11);">A</span>lerts</h2>
+
+    <!-- Alerts Form -->
+    <form id="alerts-form">
+        <div class="form-group">
+            <label for="alert-number">Enter Number:</label>
+            <input type="number" class="form-control" id="alert-number" min="1" required disabled>
+        </div>
+        <div class="form-group">
+            <label for="alert-unit">Select Unit:</label>
+            <select class="form-control" id="alert-unit" disabled>
+                <option value="days">Days</option>
+                <option value="weeks">Weeks</option>
+                <option value="months">Months</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="item-type-filter">Filter by Item Type:</label>
+            <select class="form-control" id="item-type-filter" disabled>
+                <option value="all">All</option>
+                <option value="perishable">Perishable</option>
+                <option value="non-perishable">Non-Perishable</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" id="show-alerts" style="background-color: red;">Show Alerts</button>
+        <button type="button" class="btn btn-secondary" id="change-number" style="margin-left: 10px;">Change</button>
+    </form>
+
+    <div style="margin-bottom: 20px;"></div>
+    <div class="thin-line"></div>
+    <div style="margin-bottom: 30px;"></div>
+
+    <!-- Alerts List -->
+    <h4 style="font-variant: small-caps; font-weight: bold; font-size: 34px; line-height: 1;text-align: center; font-family: sans-serif;"><span style="color: rgb(239, 11, 11);">E</span>xpiring Items</h4>
+    <div id="alerts-list" class="row"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const alertsForm = document.getElementById('alerts-form');
+    const showAlertsButton = document.getElementById('show-alerts');
+    const changeNumberButton = document.getElementById('change-number');
+    const alertsList = document.getElementById('alerts-list');
+    let items = JSON.parse(localStorage.getItem('items')) || [];
+    let changeEnabled = false;
+    let alertNumber = parseInt(localStorage.getItem('alertNumber')) || 1;
+    let alertUnit = localStorage.getItem('alertUnit') || 'days';
+
+    // Set the alert number and unit in the form
+    document.getElementById('alert-number').value = alertNumber;
+    document.getElementById('alert-unit').value = alertUnit;
+
+    const calculateDaysDifference = (expirationDate) => {
+        const currentDate = new Date();
+        const expDate = new Date(expirationDate);
+        const timeDiff = expDate - currentDate;
+        return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    };
+
+    const convertToKg = (grams) => {
+        return (grams / 1000).toFixed(2);
+    };
+
+    const removeExpiredItems = () => {
+        const today = new Date().toISOString().split('T')[0];
+        items = items.filter(item => item.expiration !== today);
+        localStorage.setItem('items', JSON.stringify(items));
+    };
+
+    const showAlerts = (number, unit) => {
+        // Update the alert number and unit in localStorage
+        localStorage.setItem('alertNumber', number);
+        localStorage.setItem('alertUnit', unit);
+
+        alertsList.innerHTML = '';
+
+        let days;
+        switch (unit) {
+            case 'days':
+                days = number;
+                break;
+            case 'weeks':
+                days = number * 7;
+                break;
+            case 'months':
+                days = number * 30;
+                break;
+        }
+
+        let filteredItems = items;
+        const itemTypeFilter = document.getElementById('item-type-filter').value;
+        if (itemTypeFilter !== 'all') {
+            filteredItems = items.filter(item => item.type === itemTypeFilter);
+        }
+
+        filteredItems.sort((a, b) => new Date(a.expiration) - new Date(b.expiration));
+
+        filteredItems.forEach(item => {
+            if (item.expiration) {
+                const daysDiff = calculateDaysDifference(item.expiration);
+                if (daysDiff <= days) {
+                    const card = document.createElement('div');
+                    card.className = 'col-md-4 mb-4';
+                    card.innerHTML = `
+                        <div class="card expiring-item">
+                            <div class="card-body">
+                                <h5 class="card-title"><strong>Item Name:</strong> ${item.name}</h5>
+                                <p class="card-text">
+                                    <strong>Weight:</strong> ${item.weight} grams (${convertToKg(item.weight)} kg)
+                                    <br>
+                                    <strong>Expires in:</strong> ${daysDiff} days
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    alertsList.appendChild(card);
+                }
+            }
+        });
+
+        if (alertsList.innerHTML === '') {
+            const noAlertsItem = document.createElement('div');
+            noAlertsItem.className = 'col-12';
+            noAlertsItem.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">No items expiring within the specified time frame.</p>
+                    </div>
+                </div>
+            `;
+            alertsList.appendChild(noAlertsItem);
+        }
+
+        updateNotificationStatus();
+    };
+
+    const showTodayExpiringItems = () => {
+        alertsList.innerHTML = '';
+
+        const today = new Date().toISOString().split('T')[0];
+
+        items.forEach(item => {
+            if (item.expiration === today) {
+                const card = document.createElement('div');
+                card.className = 'col-md-4 mb-4';
+                card.innerHTML = `
+                    <div class="card expiring-item">
+                        <div class="card-body">
+                            <h5 class="card-title"><strong>Item Name:</strong> ${item.name}</h5>
+                            <p class="card-text">
+                                <strong>Weight:</strong> ${item.weight} grams (${convertToKg(item.weight)} kg)
+                                <br>
+                                <strong>Expires Today</strong>
+                            </p>
+                        </div>
+                    </div>
+                `;
+                alertsList.appendChild(card);
+            }
+        });
+
+        if (alertsList.innerHTML === '') {
+            const noAlertsItem = document.createElement('div');
+            noAlertsItem.className = 'col-12';
+            noAlertsItem.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">No items expiring today.</p>
+                    </div>
+                </div>
+            `;
+            alertsList.appendChild(noAlertsItem);
+        }
+    };
+
+    const updateNotificationStatus = () => {
+        const notificationDot = document.getElementById('notification-dot');
+        let days;
+        switch (alertUnit) {
+            case 'days':
+                days = alertNumber;
+                break;
+            case 'weeks':
+                days = alertNumber * 7;
+                break;
+            case 'months':
+                days = alertNumber * 30;
+                break;
+        }
+
+        let hasExpiringItems = items.some(item => {
+            const daysDiff = calculateDaysDifference(item.expiration);
+            return daysDiff <= days;
+        });
+
+        if (hasExpiringItems) {
+            notificationDot.style.display = 'inline-block';
+        } else {
+            notificationDot.style.display = 'none';
+        }
+    };
+
+    showAlertsButton.addEventListener('click', () => {
+        const number = parseInt(document.getElementById('alert-number').value);
+        const unit = document.getElementById('alert-unit').value;
+        showAlerts(number, unit);
+    });
+
+    changeNumberButton.addEventListener('click', () => {
+        if (changeEnabled) {
+            const newNumber = parseInt(prompt('Enter a new number:'));
+            if (!isNaN(newNumber) && newNumber >= 1) {
+                document.getElementById('alert-number').value = newNumber;
+            }
+        } else {
+            alert('Changing the number will enable the input field.');
+            changeEnabled = true;
+            document.getElementById('alert-number').disabled = false;
+            document.getElementById('alert-unit').disabled = false;
+        }
+    });
+
+    document.getElementById('item-type-filter').addEventListener('change', () => {
+        showAlertsButton.click();
+    });
+
+    // Show alerts based on default alert number and unit
+    showAlerts(alertNumber, alertUnit);
+
+    // Update notification status on page load
+    updateNotificationStatus();
+});
+</script>
+
+</body>
+</html>
+
