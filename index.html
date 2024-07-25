@@ -45,34 +45,44 @@
         });
         </script>
      <script>
-        function updateVisitorCount() {
-          // Get visitor count from local storage or initialize if it doesn't exist
-          let visitorData = localStorage.getItem('visitorData');
-          if (!visitorData) {
-            visitorData = { count: 0, uniqueVisitors: [] };
-          } else {
-            visitorData = JSON.parse(visitorData);
-          }
-    
-          // Get the current user's unique identifier (IP + User Agent or simply Date.now() for simplicity)
-          const userIdentifier = navigator.userAgent;
-    
-          // Check if the user is a new visitor
-          if (!visitorData.uniqueVisitors.includes(userIdentifier)) {
-            visitorData.count += 1;
-            visitorData.uniqueVisitors.push(userIdentifier);
-          }
-    
-          // Store the updated visitor data in local storage
-          localStorage.setItem('visitorData', JSON.stringify(visitorData));
-    
-          // Update the visitor count in the navbar
-          document.getElementById('visitorCount').textContent = `Visitors: ${visitorData.count}`;
-        }
-    
-        // Update visitor count on page load
-        window.onload = updateVisitorCount;
-      </script>
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      const expires = "; expires=" + date.toUTCString();
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
+    }
+
+    function updateVisitorCount() {
+      let visitorCount = localStorage.getItem('visitorCount');
+      if (!visitorCount) {
+        visitorCount = 0;
+      } else {
+        visitorCount = parseInt(visitorCount);
+      }
+
+      if (!getCookie('visited')) {
+        visitorCount += 1;
+        setCookie('visited', 'true', 365); // Set cookie to expire in 1 year
+        localStorage.setItem('visitorCount', visitorCount);
+      }
+
+      document.getElementById('visitorCount').textContent = `Visitors: ${visitorCount}`;
+    }
+
+    // Update visitor count on page load
+    window.onload = updateVisitorCount;
+  </script>
           
       
     <style>
