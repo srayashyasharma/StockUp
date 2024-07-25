@@ -44,7 +44,35 @@
             }
         });
         </script>
+     <script>
+        function updateVisitorCount() {
+          // Get visitor count from local storage or initialize if it doesn't exist
+          let visitorData = localStorage.getItem('visitorData');
+          if (!visitorData) {
+            visitorData = { count: 0, uniqueVisitors: [] };
+          } else {
+            visitorData = JSON.parse(visitorData);
+          }
     
+          // Get the current user's unique identifier (IP + User Agent or simply Date.now() for simplicity)
+          const userIdentifier = navigator.userAgent;
+    
+          // Check if the user is a new visitor
+          if (!visitorData.uniqueVisitors.includes(userIdentifier)) {
+            visitorData.count += 1;
+            visitorData.uniqueVisitors.push(userIdentifier);
+          }
+    
+          // Store the updated visitor data in local storage
+          localStorage.setItem('visitorData', JSON.stringify(visitorData));
+    
+          // Update the visitor count in the navbar
+          document.getElementById('visitorCount').textContent = `Visitors: ${visitorData.count}`;
+        }
+    
+        // Update visitor count on page load
+        window.onload = updateVisitorCount;
+      </script>
           
       
     <style>
@@ -297,6 +325,7 @@
             
             <a href="stock/alerts.html"  style="font-size: 25px;" >Alerts<span id="notification-dot"></span> </a>
             <a href="signup.html" class="button-like" style="font-size: 20px;" >Get Started</a>
+            <a class="nav-link" id="visitorCount">Visitors: 0</a>
         </div>
     </nav>
     <main>
